@@ -12,7 +12,7 @@
 | **Express-прокси** | Обход CORS, единая точка логирования на сервере, токен не уходит в браузере напрямую на чужой домен (только на наш бэкенд). |
 | **Куки в браузере** | `idInstance`, `apiTokenInstance`, `apiUrl` хранятся только у пользователя; сервер их не сохраняет. |
 | **localStorage для чатов** | История сообщений только в браузере, без БД. |
-| **Один процесс (static + API)** | Проще развернуть: `npm run build && npm start`. |
+| **Один процесс (static + API)** | Проще развернуть: `npm run build && npm start` или Docker. |
 | **Vitest** | Юнит-тесты утилит без тяжёлого E2E. |
 
 Альтернатива «чистый SPA → GREEN-API» отвергнута: CORS, нет серверных логов, токен виден в каждом запросе к стороннему хосту.
@@ -98,6 +98,7 @@ npm run test:coverage   # отчёт coverage/
 | `npm test` | Vitest |
 | `npm run build` | Сборка клиента + сервера |
 | `npm start` | Продакшен: один порт (static + API) |
+| `docker compose up -d --build` | Прод на VPS (порт 3210) |
 
 Подробности локального запуска — в [LOCAL.md](./LOCAL.md).  
 Деплой на VPS — в [deploy/README.md](./deploy/README.md).

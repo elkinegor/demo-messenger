@@ -10,6 +10,8 @@ import { proxyGreenApi } from "./proxy.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3210);
+/** 0.0.0.0 in Docker; 127.0.0.1 for local bare-metal. */
+const HOST = process.env.HOST || (process.env.NODE_ENV === "production" ? "0.0.0.0" : "127.0.0.1");
 const isProd = process.env.NODE_ENV === "production";
 
 const app = express();
@@ -79,6 +81,6 @@ if (isProd) {
   });
 }
 
-app.listen(PORT, "127.0.0.1", () => {
-  writeLog("info", "server.start", { port: PORT, prod: isProd });
+app.listen(PORT, HOST, () => {
+  writeLog("info", "server.start", { host: HOST, port: PORT, prod: isProd });
 });

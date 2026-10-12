@@ -1,0 +1,14 @@
+services:
+  app:
+    build: .
+    image: demo-messenger:prod
+    container_name: demo-messenger
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3210:3210"
+    volumes:
+      - ./logs:/app/logs
+    environment:
+      NODE_ENV: production
+      HOST: "0.0.0.0"
+      PORT: "3210"
