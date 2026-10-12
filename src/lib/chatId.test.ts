@@ -10,13 +10,15 @@ describe("chatId helpers", () => {
     expect(phoneToChatId("+7 999 123-45-67")).toBe("79991234567@c.us");
   });
 
-  it("normalizes telegram phone input", () => {
+  it("normalizes telegram and whatsapp phone input", () => {
     expect(normalizeChatIdInput("+79991234567", "telegram")).toBe("79991234567@c.us");
+    expect(normalizeChatIdInput("+79991234567", "whatsapp")).toBe("79991234567@c.us");
   });
 
   it("keeps existing chatId", () => {
     expect(normalizeChatIdInput("10000000", "max")).toBe("10000000");
     expect(normalizeChatIdInput("7999@c.us", "telegram")).toBe("7999@c.us");
+    expect(normalizeChatIdInput("7999@c.us", "whatsapp")).toBe("7999@c.us");
   });
 
   it("formats display title", () => {

@@ -1,5 +1,5 @@
 /** Messenger product key — each has its own cookies and chat storage. */
-export type MessengerKind = "max" | "telegram";
+export type MessengerKind = "max" | "telegram" | "whatsapp";
 
 /** GREEN-API credentials kept only in the browser. */
 export type GreenCredentials = {

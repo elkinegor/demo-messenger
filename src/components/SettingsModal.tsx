@@ -112,7 +112,8 @@ export function SettingsModal({ kind, open, onClose, onSaved, pushToast }: Props
               spellCheck={false}
             />
             <small className="field__hint">
-              Берётся из консоли GREEN-API. Для Telegram обычно https://4100.api.green-api.com
+              Из консоли GREEN-API (карточка инстанса). WhatsApp часто https://1100.api.green-api.com,
+              Telegram — https://4100.api.green-api.com
             </small>
           </label>
           <label className="field">

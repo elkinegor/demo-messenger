@@ -1,6 +1,6 @@
 # demo-messenger
 
-Тестовое задание: UI для отправки и получения текстовых сообщений в **MAX** и **Telegram** через [GREEN-API](https://green-api.com/).
+Тестовое задание: UI для отправки и получения текстовых сообщений в **MAX**, **Telegram** и **WhatsApp** через [GREEN-API](https://green-api.com/).
 
 Онлайн: https://demo.linkbit.live
 
@@ -41,11 +41,11 @@ demo-messenger/
 │   └── proxy.ts             # прокси к GREEN-API
 ├── src/
 │   ├── main.tsx
-│   ├── App.tsx              # вкладки MAX / Telegram
+│   ├── App.tsx              # вкладки MAX / Telegram / WhatsApp
 │   ├── i18n/                # словари RU/EN
 │   ├── lib/
 │   │   ├── cookies.ts       # учётные данные в куках
-│   │   ├── greenApi.ts      # клиент API через наш прокси
+│   │   ├── greenApi.ts      # клиент GREEN-API (из браузера)
 │   │   ├── chatId.ts        # нормализация телефона / chatId
 │   │   ├── notifications.ts # разбор ReceiveNotification
 │   │   ├── storage.ts       # история чатов в localStorage
@@ -59,7 +59,8 @@ demo-messenger/
 │   │   ├── NewChatModal.tsx
 │   │   └── messengers/
 │   │       ├── MaxShell.tsx       # стиль web.max.ru
-│   │       └── TelegramShell.tsx  # стиль Telegram Web
+│   │       ├── TelegramShell.tsx  # стиль Telegram Web
+│   │       └── WhatsappShell.tsx  # стиль WhatsApp Web
 │   └── styles/
 └── logs/                    # создаётся на сервере, в git не входит
 ```
@@ -68,13 +69,13 @@ demo-messenger/
 
 | Функция | Решение |
 | --- | --- |
-| Вход | Иконка настроек → `apiUrl`, `idInstance`, `apiTokenInstance` → куки (отдельно для MAX и Telegram). |
+| Вход | Иконка настроек → `apiUrl`, `idInstance`, `apiTokenInstance` → куки (отдельно для каждой вкладки). |
 | Проверка инстанса | `getStateInstance` → ожидаем `authorized`. |
-| Новый чат | MAX: `checkAccount` → числовой `chatId`. Telegram: `phone@c.us` (или chatId как есть). |
+| Новый чат | MAX: `checkAccount` → числовой `chatId`. Telegram / WhatsApp: `phone@c.us`. |
 | Отправка | `SendMessage` `{ chatId, message }`. |
 | Получение | Цикл `ReceiveNotification` → обработка → `DeleteNotification`. |
-| UI | Две вкладки: MAX / Telegram, разные визуальные оболочки. |
-| Ожидание | Спиннер / skeleton при запросах. |
+| UI | Три вкладки: MAX / Telegram / WhatsApp, разные визуальные оболочки. |
+| Ожидание | Спиннер при запросах. |
 | Ошибки | Тосты (не alert). |
 | Логи | Сервер: `logs/app.log`. Клиент шлёт важные события на `POST /api/log`. |
 | Язык | Переключатель RU/EN. |
@@ -109,5 +110,7 @@ npm run test:coverage   # отчёт coverage/
 - MAX: https://green-api.com/v3/docs/api/sending/SendMessage/
 - Получение: https://green-api.com/v3/docs/api/receiving/technology-http-api/
 - Telegram: https://green-api.com/en/telegram/docs/api/
+- WhatsApp: https://green-api.com/docs/api/
 
-Учётные данные берутся из [консоли GREEN-API](https://console.green-api.com/) (`apiUrl`, `idInstance`, `apiTokenInstance`). Для MAX и Telegram нужны **разные** инстансы.
+Учётные данные — из [консоли GREEN-API](https://console.green-api.com/) (`apiUrl`, `idInstance`, `apiTokenInstance`).  
+Для MAX, Telegram и WhatsApp нужны **разные** инстансы.

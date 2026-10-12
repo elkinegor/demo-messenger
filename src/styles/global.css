@@ -502,6 +502,34 @@ select {
     linear-gradient(180deg, #cfe3f3, #dce8f3);
 }
 
+/* WhatsApp Web–inspired skin */
+.theme-whatsapp {
+  --bg: #ffffff;
+  --sidebar: #ffffff;
+  --chat-bg: #e5ddd5;
+  --fg: #111b21;
+  --muted: #667781;
+  --border: rgba(17, 27, 33, 0.08);
+  --row-hover: #f0f2f5;
+  --accent: #25d366;
+  --accent-2: #128c7e;
+  --bubble-out: #d9fdd3;
+  --bubble-out-fg: #111b21;
+  --bubble-in: #ffffff;
+  --bubble-in-fg: #111b21;
+  --input-bg: #ffffff;
+}
+
+.theme-whatsapp .messenger__main {
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(37, 211, 102, 0.07), transparent 40%),
+    linear-gradient(180deg, #d1cdc4, #e5ddd5);
+}
+
+.theme-whatsapp .messenger__brand-mark {
+  background: linear-gradient(145deg, #25d366, #128c7e);
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;

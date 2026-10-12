@@ -1,9 +1,10 @@
 /**
- * Root: messenger tabs (MAX / Telegram) + shared chrome.
+ * Root: messenger tabs (MAX / Telegram / WhatsApp) + shared chrome.
  */
 import { useState } from "react";
 import { MaxShell } from "./components/messengers/MaxShell";
 import { TelegramShell } from "./components/messengers/TelegramShell";
+import { WhatsappShell } from "./components/messengers/WhatsappShell";
 import { useI18n } from "./i18n/I18nContext";
 import type { MessengerKind } from "./lib/types";
 
@@ -32,6 +33,13 @@ export default function App() {
           >
             {t("tabTelegram")}
           </button>
+          <button
+            type="button"
+            className={`tabs__btn ${tab === "whatsapp" ? "is-active" : ""}`}
+            onClick={() => setTab("whatsapp")}
+          >
+            {t("tabWhatsapp")}
+          </button>
         </nav>
         <div className="app-top__right">
           <button
@@ -44,7 +52,11 @@ export default function App() {
           </button>
         </div>
       </header>
-      <main className="app-main">{tab === "max" ? <MaxShell /> : <TelegramShell />}</main>
+      <main className="app-main">
+        {tab === "max" ? <MaxShell /> : null}
+        {tab === "telegram" ? <TelegramShell /> : null}
+        {tab === "whatsapp" ? <WhatsappShell /> : null}
+      </main>
     </div>
   );
 }

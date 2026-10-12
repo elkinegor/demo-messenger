@@ -1,5 +1,7 @@
 /**
- * Create a new chat by phone (MAX: checkAccount; Telegram: phone@c.us).
+ * Create a new chat by phone.
+ * MAX: checkAccount → numeric chatId.
+ * Telegram / WhatsApp: phone@c.us (GREEN-API WhatsApp-compatible id).
  */
 import { useState } from "react";
 import { useI18n } from "../i18n/I18nContext";
@@ -97,7 +99,11 @@ export function NewChatModal({
               }}
             />
             <small className="field__hint">
-              {kind === "max" ? t("phoneHintMax") : t("phoneHintTelegram")}
+              {kind === "max"
+                ? t("phoneHintMax")
+                : kind === "whatsapp"
+                  ? t("phoneHintWhatsapp")
+                  : t("phoneHintTelegram")}
             </small>
           </label>
           {busy ? <Spinner label={t("checking")} /> : null}
