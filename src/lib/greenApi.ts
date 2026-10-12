@@ -1,7 +1,12 @@
 /**
- * Browser client for GREEN-API via our Express proxy.
- * Credentials are sent as headers (loaded from cookies by the caller).
+ * Browser client for GREEN-API (direct HTTPS to apiUrl from the user's network).
+ *
+ * Why not via our Express proxy: the VPS (Singapore) cannot open TCP:443 to
+ * GREEN-API hosts (*.api.green-api.com / Yandex). The console works, API does not.
+ * The user's browser usually can reach GREEN-API, so calls go from the client.
+ * Server still receives non-secret UI logs via /api/log.
  */
+import { clientLog } from "./loggerClient";
 import type { GreenCredentials } from "./types";
 
 export class GreenApiError extends Error {
@@ -13,13 +18,15 @@ export class GreenApiError extends Error {
   }
 }
 
-function credHeaders(creds: GreenCredentials): HeadersInit {
-  return {
-    "Content-Type": "application/json",
-    "x-api-url": creds.apiUrl,
-    "x-id-instance": creds.idInstance,
-    "x-api-token": creds.apiTokenInstance,
-  };
+/** Build GREEN-API method URL. Method names are case-sensitive on some hosts. */
+function greenUrl(
+  creds: GreenCredentials,
+  method: string,
+  extraPath = "",
+  query = "",
+): string {
+  const base = creds.apiUrl.replace(/\/$/, "");
+  return `${base}/waInstance${creds.idInstance}/${method}/${creds.apiTokenInstance}${extraPath}${query}`;
 }
 
 async function parseJson(res: Response): Promise<unknown> {
@@ -33,17 +40,47 @@ async function parseJson(res: Response): Promise<unknown> {
 }
 
 async function request<T>(
-  path: string,
   creds: GreenCredentials,
-  init?: RequestInit,
+  method: string,
+  init?: RequestInit & { extraPath?: string; query?: string },
 ): Promise<T> {
-  const res = await fetch(path, {
-    ...init,
-    headers: { ...credHeaders(creds), ...(init?.headers || {}) },
-  });
-  const data = (await parseJson(res)) as T & { error?: string; detail?: string };
+  const { extraPath = "", query = "", ...fetchInit } = init || {};
+  const url = greenUrl(creds, method, extraPath, query);
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      ...fetchInit,
+      headers: {
+        ...(fetchInit.body ? { "Content-Type": "application/json" } : {}),
+        ...(fetchInit.headers || {}),
+      },
+    });
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : String(err);
+    clientLog("error", "green.fetch_failed", {
+      method,
+      idInstance: creds.idInstance,
+      detail,
+    });
+    throw new GreenApiError(
+      `GREEN-API unreachable (${detail}). Check apiUrl and that your network can reach *.api.green-api.com`,
+      0,
+    );
+  }
+
+  const data = (await parseJson(res)) as T & {
+    error?: string;
+    detail?: string;
+    message?: string;
+  };
   if (!res.ok) {
-    const msg = data?.error || data?.detail || `HTTP ${res.status}`;
+    const msg =
+      data?.error || data?.detail || data?.message || `HTTP ${res.status}`;
+    clientLog("warn", "green.http_error", {
+      method,
+      status: res.status,
+      idInstance: creds.idInstance,
+    });
     throw new GreenApiError(String(msg), res.status);
   }
   return data as T;
@@ -52,7 +89,7 @@ async function request<T>(
 export async function getStateInstance(
   creds: GreenCredentials,
 ): Promise<{ stateInstance: string }> {
-  return request("/api/green/getStateInstance", creds);
+  return request(creds, "getStateInstance", { method: "GET" });
 }
 
 export async function sendMessage(
@@ -60,7 +97,7 @@ export async function sendMessage(
   chatId: string,
   message: string,
 ): Promise<{ idMessage: string }> {
-  return request("/api/green/sendMessage", creds, {
+  return request(creds, "sendMessage", {
     method: "POST",
     body: JSON.stringify({ chatId, message }),
   });
@@ -70,11 +107,13 @@ export async function receiveNotification(
   creds: GreenCredentials,
   receiveTimeout = 5,
 ): Promise<null | { receiptId: number; body: Record<string, unknown> }> {
-  const data = await request<null | { receiptId: number; body: Record<string, unknown> }>(
-    `/api/green/receiveNotification?receiveTimeout=${receiveTimeout}`,
-    creds,
-  );
-  // Empty queue → GREEN-API may return null or {}.
+  const data = await request<null | {
+    receiptId: number;
+    body: Record<string, unknown>;
+  }>(creds, "receiveNotification", {
+    method: "GET",
+    query: `?receiveTimeout=${receiveTimeout}`,
+  });
   if (!data || !(data as { receiptId?: number }).receiptId) return null;
   return data as { receiptId: number; body: Record<string, unknown> };
 }
@@ -83,8 +122,9 @@ export async function deleteNotification(
   creds: GreenCredentials,
   receiptId: number,
 ): Promise<void> {
-  await request(`/api/green/deleteNotification/${receiptId}`, creds, {
+  await request(creds, "deleteNotification", {
     method: "DELETE",
+    extraPath: `/${receiptId}`,
   });
 }
 
@@ -93,7 +133,7 @@ export async function checkAccount(
   creds: GreenCredentials,
   phoneNumber: string,
 ): Promise<{ exists: boolean; chatId?: string }> {
-  return request("/api/green/checkAccount", creds, {
+  return request(creds, "checkAccount", {
     method: "POST",
     body: JSON.stringify({ phoneNumber: Number(phoneNumber) || phoneNumber }),
   });

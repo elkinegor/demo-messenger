@@ -33,7 +33,11 @@ npm start
 1. Зарегистрируйтесь в [GREEN-API](https://console.green-api.com/).
 2. Создайте инстанс **MAX** и/или **Telegram**, авторизуйте его.
 3. В приложении откройте ⚙ и вставьте `apiUrl`, `idInstance`, `apiTokenInstance`.
+   - Telegram: `apiUrl` чаще всего `https://4100.api.green-api.com` (смотрите в карточке инстанса).
+   - Не путайте с адресом консоли (`console.green-api.com`) — это не apiUrl.
 4. Данные сохранятся в куках браузера (не на сервере).
+
+Если видите «GREEN-API unreachable»: проверьте, что с вашего ПК открывается `apiUrl` (не только консоль). Запросы идут из браузера, не с сервера demo.linkbit.live.
 
 ## Проверка сценария
 

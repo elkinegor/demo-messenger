@@ -107,10 +107,13 @@ export function SettingsModal({ kind, open, onClose, onSaved, pushToast }: Props
             <input
               value={apiUrl}
               onChange={(e) => setApiUrl(e.target.value)}
-              placeholder="https://XXXX.api.green-api.com"
+              placeholder="https://4100.api.green-api.com"
               autoComplete="off"
               spellCheck={false}
             />
+            <small className="field__hint">
+              Берётся из консоли GREEN-API. Для Telegram обычно https://4100.api.green-api.com
+            </small>
           </label>
           <label className="field">
             <span>{t("idInstance")}</span>
