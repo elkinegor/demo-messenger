@@ -1,0 +1,7 @@
+# Append to /etc/caddy/Caddyfile on the VPS (alongside linkbit.live).
+# TLS is automatic via Caddy when DNS points to this host.
+
+demo.linkbit.live {
+	encode gzip
+	reverse_proxy 127.0.0.1:3210
+}

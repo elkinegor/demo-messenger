@@ -99,7 +99,8 @@ npm run test:coverage   # отчёт coverage/
 | `npm run build` | Сборка клиента + сервера |
 | `npm start` | Продакшен: один порт (static + API) |
 
-Подробности локального запуска — в [LOCAL.md](./LOCAL.md).
+Подробности локального запуска — в [LOCAL.md](./LOCAL.md).  
+Деплой на VPS — в [deploy/README.md](./deploy/README.md).
 
 ## GREEN-API
 
